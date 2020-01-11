@@ -23,7 +23,7 @@ const Input = props => {
         onChange={props.onChange}
       />
       {isInvalid(props) ? (
-        <span>{props.errorMassage || "Введите верный логин и пароль"}</span>
+        <span>{props.errorMassage || "Введите верное значение"}</span>
       ) : null}
     </div>
   );
