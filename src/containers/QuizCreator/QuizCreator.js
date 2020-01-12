@@ -3,6 +3,7 @@ import classes from "../QuizCreator/QuizCreator.module.css";
 import Button from "../../components/UI/Button/Button";
 import Input from "../../components/UI/Input/Input";
 import Select from "../../components/UI/Select/Select";
+import axios from "axios";
 import {
   createControl,
   validate,
@@ -20,31 +21,41 @@ function createOptionControl(number) {
     { required: true }
   );
 }
+
+function createFormControls() {
+  return {
+    question: createControl(
+      {
+        label: "Введите вопрос",
+        errorMessage: "Вопрос не может быть пустым"
+      },
+      { required: true }
+    ),
+    option1: createOptionControl(1),
+    option2: createOptionControl(2),
+    option3: createOptionControl(3),
+    option4: createOptionControl(4)
+  };
+}
+
 export default class QuizCreator extends Component {
   state = {
     quiz: [],
     isFormValid: false,
     rightAnswerId: 1,
-    formControls: {
-      question: createControl(
-        {
-          label: "Введите вопрос",
-          errorMessage: "Вопрос неможет быть пустым"
-        },
-        { required: true }
-      ),
-      option1: createOptionControl(1),
-      option2: createOptionControl(2),
-      option3: createOptionControl(3),
-      option4: createOptionControl(4)
-    }
+    formControls: createFormControls()
   };
 
-  submitHandler = event => {
+  sibmitHandler = event => {
+    event.preventDefault();
+  };
+
+  addQuestionHandler = event => {
     event.preventDefault();
 
     const quiz = this.state.quiz.concat();
     const index = quiz.length + 1;
+
     const {
       question,
       option1,
@@ -52,8 +63,9 @@ export default class QuizCreator extends Component {
       option3,
       option4
     } = this.state.formControls;
+
     const questionItem = {
-      question: this.state.formControls.question.value,
+      question: question.value,
       id: index,
       rightAnswerId: this.state.rightAnswerId,
       answers: [
@@ -68,15 +80,24 @@ export default class QuizCreator extends Component {
 
     this.setState({
       quiz,
-      createControl
+      isFormValid: false,
+      rightAnswerId: 1,
+      formControls: createFormControls()
     });
   };
 
-  addQuestionHandler = event => {
+  createQuizHandler = async event => {
     event.preventDefault();
-  };
-  createQuizHandler = event => {
-    event.preventDefault();
+
+    try {
+      const response = await axios.post(
+        "https://react-quiz-dec3a.firebaseio.com/quizes.json",
+        this.state.quiz
+      );
+      console.log(response.data);
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   changeHandler = (value, controlName) => {
@@ -95,7 +116,7 @@ export default class QuizCreator extends Component {
     });
   };
 
-  renderControls = () => {
+  renderControls() {
     return Object.keys(this.state.formControls).map((controlName, index) => {
       const control = this.state.formControls[controlName];
 
@@ -116,7 +137,8 @@ export default class QuizCreator extends Component {
         </Auxiliary>
       );
     });
-  };
+  }
+
   selectChangeHandler = event => {
     this.setState({
       rightAnswerId: +event.target.value
@@ -126,7 +148,7 @@ export default class QuizCreator extends Component {
   render() {
     const select = (
       <Select
-        label="ВЫберетеправильный ответ"
+        label="Выберите правильный ответ"
         value={this.state.rightAnswerId}
         onChange={this.selectChangeHandler}
         options={[
@@ -137,6 +159,7 @@ export default class QuizCreator extends Component {
         ]}
       />
     );
+
     return (
       <div className={classes.QuizCreator}>
         <div>
@@ -144,7 +167,9 @@ export default class QuizCreator extends Component {
 
           <form onSubmit={this.submitHandler}>
             {this.renderControls()}
+
             {select}
+
             <Button
               type="primary"
               onClick={this.addQuestionHandler}
@@ -152,6 +177,7 @@ export default class QuizCreator extends Component {
             >
               Добавить вопрос
             </Button>
+
             <Button
               type="success"
               onClick={this.createQuizHandler}
