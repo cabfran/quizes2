@@ -68,7 +68,7 @@ export default class QuizCreator extends Component {
 
     this.setState({
       quiz,
-      crea
+      createControl
     });
   };
 
