@@ -9,7 +9,10 @@ import {
   validate,
   validateForm
 } from "../../Form/FormFramework";
-import {createQuizQuestion, finishCreateQuiz} from '../QuizCreator/QuizCreator'
+import {
+  createQuizQuestion,
+  finishCreateQuiz
+} from "../../Store/Actions/create.js";
 import Auxiliary from "../../hoc/Layout/Auxiliary/Auxiliary";
 import { connect } from "react-redux";
 
@@ -40,7 +43,7 @@ function createFormControls() {
   };
 }
 
- class QuizCreator extends Component {
+class QuizCreator extends Component {
   state = {
     isFormValid: false,
     rightAnswerId: 1,
@@ -54,7 +57,6 @@ function createFormControls() {
   addQuestionHandler = event => {
     event.preventDefault();
 
-
     const {
       question,
       option1,
@@ -65,7 +67,7 @@ function createFormControls() {
 
     const questionItem = {
       question: question.value,
-      id: this.props.quiz.length +1,
+      id: this.props.quiz.length + 1,
       rightAnswerId: this.state.rightAnswerId,
       answers: [
         { text: option1.value, id: option1.id },
@@ -75,30 +77,27 @@ function createFormControls() {
       ]
     };
 
-this.props.createQuizQuestion(questionItem)
+    this.props.createQuizQuestion(questionItem);
     this.setState({
-      
       isFormValid: false,
       rightAnswerId: 1,
       formControls: createFormControls()
     });
   };
 
-  createQuizHandler =  event => {
+  createQuizHandler = event => {
     event.preventDefault();
 
-    
-       axios.post("/quizes.json", this.state.quiz);
+    axios.post("/quizes.json", this.state.quiz);
 
-      this.setState({
-        quiz: [],
-        isFormValid: false,
-        rightAnswerId: 1,
-        formControls: createFormControls()
-      });
+    this.setState({
+      quiz: [],
+      isFormValid: false,
+      rightAnswerId: 1,
+      formControls: createFormControls()
+    });
 
-      this.props.finishCreateQuiz()
-   
+    this.props.finishCreateQuiz();
   };
 
   changeHandler = (value, controlName) => {
@@ -191,19 +190,17 @@ this.props.createQuizQuestion(questionItem)
       </div>
     );
   }
-
- 
 }
- function mapStateTotProps(state) {
-   return {
-     quiz: state.create.quiz
-   };
- }
- function MapDispatcheToProps(dispatch) {
-   return {
-     createQuizQuestion: item => dispatch(createQuizQuestion(item)),
-     finishCreateQuiz: () => dispatch(finishCreateQuiz())
-   };
- }
+function mapStateTotProps(state) {
+  return {
+    quiz: state.create.quiz
+  };
+}
+function MapDispatcheToProps(dispatch) {
+  return {
+    createQuizQuestion: item => dispatch(createQuizQuestion(item)),
+    finishCreateQuiz: () => dispatch(finishCreateQuiz())
+  };
+}
 
 export default connect(mapStateTotProps, MapDispatcheToProps)(QuizCreator);
