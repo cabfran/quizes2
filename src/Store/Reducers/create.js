@@ -17,7 +17,7 @@ export default function createReducer(state = initialState, action) {
     case RESET_QUIZ_CREATION:
       return {
         ...state,
-        qui: []
+        quiz: []
       };
     default:
       return state;

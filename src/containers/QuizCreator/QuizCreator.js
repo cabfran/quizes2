@@ -87,9 +87,7 @@ class QuizCreator extends Component {
 
   createQuizHandler = event => {
     event.preventDefault();
-
-    axios.post("/quizes.json", this.state.quiz);
-
+    
     this.setState({
       quiz: [],
       isFormValid: false,
